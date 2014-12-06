@@ -88,9 +88,7 @@ int process(VideoCapture& capture) {
         }
         drawContours( frame, contourHulls, -1, Scalar(255, 128,0), 2, CV_AA);
         drawContours( frame, contours, -1, Scalar(128,255,128), 2, CV_AA);
-        for(int i = 0; i < contourRects.size(); i++) {
-            cout << "Point " << i << endl;
-            RotatedRect rr = contourRects.at(i);
+        for(RotatedRect rr : contourRects) {
             rotated_rect(frame, rr, Scalar(0, 0, 255));
         }
         int ptnum;
