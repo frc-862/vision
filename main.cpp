@@ -86,8 +86,8 @@ int process(VideoCapture& capture) {
             contourHulls.push_back(hull);
             contourRects.push_back(minAreaRect(hull));
         }
-        drawContours( frame, contourHulls, -1, Scalar(255, 128,0), 2, CV_AA);
         drawContours( frame, contours, -1, Scalar(128,255,128), 2, CV_AA);
+        drawContours( frame, contourHulls, -1, Scalar(255, 128,0), 2, CV_AA);
         for(RotatedRect rr : contourRects) {
             rotated_rect(frame, rr, Scalar(0, 0, 255));
         }
