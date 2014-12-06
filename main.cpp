@@ -78,32 +78,30 @@ int process(VideoCapture& capture) {
         ModBlobDetector* blobDetector = new ModBlobDetector(params);
 
         vector<vector<Point>> contourHulls;
-        vector<Point2f*> contourRects;
+        vector<RotatedRect> contourRects;
         blobDetector->findBlobs(erodedImageBinary, erodedImageBinary, centers, contours);
         for(vector<Point> ctpts : contours) {
             vector<Point> hull;
             convexHull(ctpts, hull);
             contourHulls.push_back(hull);
-            Point2f rectPoints[4];
-            minAreaRect(ctpts).points(rectPoints);
-            contourRects.push_back(rectPoints);
+            contourRects.push_back(minAreaRect(hull));
         }
-        drawContours( frame, contourHulls, -1, Scalar(255, 128,0), 2);
-        drawContours( frame, contours, -1, Scalar(128,255,128), 2);
-        for(Point2f* pts : contourRects) {
-            for( int j = 0; j < 4; j++ )
-                line( frame, pts[j], pts[(j+1)%4], Scalar(0,0,255), 1, 8 );
+        drawContours( frame, contourHulls, -1, Scalar(255, 128,0), 2, CV_AA);
+        drawContours( frame, contours, -1, Scalar(128,255,128), 2, CV_AA);
+        for(int i = 0; i < contourRects.size(); i++) {
+            cout << "Point " << i << endl;
+            RotatedRect rr = contourRects.at(i);
+            rotated_rect(frame, rr, Scalar(0, 0, 255));
         }
         int ptnum;
         for(KeyPoint pt : centers) {
             Scalar color(255, 0, 255);
             circle(frame, pt.pt, 5
-                   , color, -1 /*filled*/);
-            circle(frame, pt.pt, pt.size, color, 1);
+                   , color, -1 /*filled*/, CV_AA);
+            circle(frame, pt.pt, pt.size, color, 1, CV_AA);
             ptnum++;
         }
         delete blobDetector;
-
 
         imshow(ERODE_PREVIEW_WIN_NAME, erodedImageBinary);
 
@@ -277,5 +275,24 @@ bool fileExists(const std::string& name) {
     } else {
         f.close();
         return false;
+    }
+}
+
+//from opencv-feature-detector, ported to opencv c++
+void rotated_rect(Mat im, const RotatedRect & rot_rect, CvScalar color){
+    Point2f box_vtx[4];
+    rot_rect.points(box_vtx);
+
+    // copied shamelessly from minarea.c
+    // it initialize to the last point, then connect to point 0, point 1, point 2 pair-wise
+    Point pt0, pt;
+    pt0.x = round(box_vtx[3].x);
+    pt0.y = round(box_vtx[3].y);
+    for(int i = 0; i < 4; i++ )
+    {
+        pt.x = round(box_vtx[i].x);
+        pt.y = round(box_vtx[i].y);
+        line(im, pt0, pt, color, 1, CV_AA, 0);
+        pt0 = pt;
     }
 }
