@@ -3,7 +3,7 @@
 using namespace std;
 
 const string VIDEO_WINDOW_NAME = "Video";
-const string ERODE_PREVIEW_WIN_NAME = "Erosion/Dilation Preview";
+const string ERODE_PREVIEW_WIN_NAME = "Mask Preview";
 const int GAUSSIAN_KERNEL = 7;
 
 char* preferenceFileName = (char*)"default.xml";
@@ -88,19 +88,18 @@ int process(VideoCapture& capture) {
             minAreaRect(ctpts).points(rectPoints);
             contourRects.push_back(rectPoints);
         }
-		cvtColor(erodedImageBinary, erodedImageBinary, COLOR_GRAY2BGR); //So we can draw colors on the mask image
-        drawContours( erodedImageBinary, contourHulls, -1, Scalar(255, 128,0), 2);
-        drawContours( erodedImageBinary, contours, -1, Scalar(128,255,128), 2);
+        drawContours( frame, contourHulls, -1, Scalar(255, 128,0), 2);
+        drawContours( frame, contours, -1, Scalar(128,255,128), 2);
         for(Point2f* pts : contourRects) {
             for( int j = 0; j < 4; j++ )
-                      line( erodedImageBinary, pts[j], pts[(j+1)%4], Scalar(0,0,255), 1, 8 );
+                      line( frame, pts[j], pts[(j+1)%4], Scalar(0,0,255), 1, 8 );
         }
 		int ptnum;
 		for(KeyPoint pt : centers) {
 			Scalar color(255, 0, 255);
-			circle(erodedImageBinary, pt.pt, 5
+            circle(frame, pt.pt, 5
 					, color, -1 /*filled*/);
-			circle(erodedImageBinary, pt.pt, pt.size, color, 1);
+            circle(frame, pt.pt, pt.size, color, 1);
 			ptnum++;
 		}
         delete blobDetector;
@@ -108,7 +107,7 @@ int process(VideoCapture& capture) {
 
 		imshow(ERODE_PREVIEW_WIN_NAME, erodedImageBinary);
 
-		imshow(VIDEO_WINDOW_NAME, erodedImage);
+        imshow(VIDEO_WINDOW_NAME, frame);
 
 		char key = (char)waitKey(1); //Delay 1ms
 		switch (key) {
