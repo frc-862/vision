@@ -13,73 +13,73 @@ int main(int argc, char** args) {
         preferenceFileName = args[1];
     }
 
-	VideoCapture capture(0); //0 is the default camera
-	if (!capture.isOpened()) {
-		cerr << "Failed to open camera!" << endl;
-		return 1;
-	}
-	return process(capture);
+    VideoCapture capture(0); //0 is the default camera
+    if (!capture.isOpened()) {
+        cerr << "Failed to open camera!" << endl;
+        return 1;
+    }
+    return process(capture);
 }
 
 Mat applyMask(Mat input, Mat mask) {
-	Mat newImage;
-	input.copyTo(newImage, mask);
-	return newImage;
+    Mat newImage;
+    input.copyTo(newImage, mask);
+    return newImage;
 }
 
 int process(VideoCapture& capture) {
-	cout << "Press q or escape to quit!" << endl;
+    cout << "Press q or escape to quit!" << endl;
 
-	namedWindow(VIDEO_WINDOW_NAME, CV_WINDOW_AUTOSIZE);
-	namedWindow(ERODE_PREVIEW_WIN_NAME, CV_WINDOW_NORMAL);
-	resizeWindow(ERODE_PREVIEW_WIN_NAME, 320, 240);
-	ControlsWindow* controlsWindow = new ControlsWindow();
+    namedWindow(VIDEO_WINDOW_NAME, CV_WINDOW_AUTOSIZE);
+    namedWindow(ERODE_PREVIEW_WIN_NAME, CV_WINDOW_NORMAL);
+    resizeWindow(ERODE_PREVIEW_WIN_NAME, 320, 240);
+    ControlsWindow* controlsWindow = new ControlsWindow();
 
     if(fileExists(preferenceFileName)) {
         loadSettings(controlsWindow, (char*)preferenceFileName);
     }
 
-	Mat frame;
-	while (true) {
-		capture >> frame;
-		if (frame.empty())
-			break;
+    Mat frame;
+    while (true) {
+        capture >> frame;
+        if (frame.empty())
+            break;
 
-		if (controlsWindow->getBlurDeviation() > 0) {
-			GaussianBlur(frame, frame, Size(GAUSSIAN_KERNEL, GAUSSIAN_KERNEL), controlsWindow->getBlurDeviation());
-		}
+        if (controlsWindow->getBlurDeviation() > 0) {
+            GaussianBlur(frame, frame, Size(GAUSSIAN_KERNEL, GAUSSIAN_KERNEL), controlsWindow->getBlurDeviation());
+        }
 
-		//Apply brightness and contrast
-		frame.convertTo(frame, -1, controlsWindow->getContrast(), controlsWindow->getBrightness());
+        //Apply brightness and contrast
+        frame.convertTo(frame, -1, controlsWindow->getContrast(), controlsWindow->getBrightness());
 
-		Mat maskedImage = thresholdImage(controlsWindow, frame);
+        Mat maskedImage = thresholdImage(controlsWindow, frame);
 
-		Mat erodedImage = erodeDilate(maskedImage, controlsWindow);
+        Mat erodedImage = erodeDilate(maskedImage, controlsWindow);
 
-		Mat erodedImageBinary;
+        Mat erodedImageBinary;
 
-		threshold(erodedImage, erodedImageBinary, 0, 255, CV_THRESH_BINARY);
+        threshold(erodedImage, erodedImageBinary, 0, 255, CV_THRESH_BINARY);
 
-		cvtColor(erodedImageBinary, erodedImageBinary, COLOR_BGR2GRAY);
+        cvtColor(erodedImageBinary, erodedImageBinary, COLOR_BGR2GRAY);
 
-		cv::SimpleBlobDetector::Params params;
-		params.minDistBetweenBlobs = 50.0f;
-		params.filterByInertia = false;
-		params.filterByConvexity = false;
+        cv::SimpleBlobDetector::Params params;
+        params.minDistBetweenBlobs = 50.0f;
+        params.filterByInertia = false;
+        params.filterByConvexity = false;
         params.filterByColor = true;
-		params.filterByCircularity = false;
-		params.filterByArea = true;
-		params.minArea = 1000.0f;
-		params.maxArea = 100000.0f;
-		params.blobColor = 255;
+        params.filterByCircularity = false;
+        params.filterByArea = true;
+        params.minArea = 1000.0f;
+        params.maxArea = 100000.0f;
+        params.blobColor = 255;
 
-		vector<KeyPoint> centers;
-		vector<vector<Point>> contours;
-		ModBlobDetector* blobDetector = new ModBlobDetector(params);
+        vector<KeyPoint> centers;
+        vector<vector<Point>> contours;
+        ModBlobDetector* blobDetector = new ModBlobDetector(params);
 
         vector<vector<Point>> contourHulls;
         vector<Point2f*> contourRects;
-		blobDetector->findBlobs(erodedImageBinary, erodedImageBinary, centers, contours);
+        blobDetector->findBlobs(erodedImageBinary, erodedImageBinary, centers, contours);
         for(vector<Point> ctpts : contours) {
             vector<Point> hull;
             convexHull(ctpts, hull);
@@ -92,87 +92,87 @@ int process(VideoCapture& capture) {
         drawContours( frame, contours, -1, Scalar(128,255,128), 2);
         for(Point2f* pts : contourRects) {
             for( int j = 0; j < 4; j++ )
-                      line( frame, pts[j], pts[(j+1)%4], Scalar(0,0,255), 1, 8 );
+                line( frame, pts[j], pts[(j+1)%4], Scalar(0,0,255), 1, 8 );
         }
-		int ptnum;
-		for(KeyPoint pt : centers) {
-			Scalar color(255, 0, 255);
+        int ptnum;
+        for(KeyPoint pt : centers) {
+            Scalar color(255, 0, 255);
             circle(frame, pt.pt, 5
-					, color, -1 /*filled*/);
+                   , color, -1 /*filled*/);
             circle(frame, pt.pt, pt.size, color, 1);
-			ptnum++;
-		}
+            ptnum++;
+        }
         delete blobDetector;
 
 
-		imshow(ERODE_PREVIEW_WIN_NAME, erodedImageBinary);
+        imshow(ERODE_PREVIEW_WIN_NAME, erodedImageBinary);
 
         imshow(VIDEO_WINDOW_NAME, frame);
 
-		char key = (char)waitKey(1); //Delay 1ms
-		switch (key) {
-		case 'q':
-		case 'Q':
-		case 27: //escape
+        char key = (char)waitKey(1); //Delay 1ms
+        switch (key) {
+        case 'q':
+        case 'Q':
+        case 27: //escape
             saveSettings(controlsWindow, (char*)preferenceFileName);
-			return 0;
-		default:
-			break;
-		}
-	}
+            return 0;
+        default:
+            break;
+        }
+    }
 
     saveSettings(controlsWindow, (char*)preferenceFileName);
     delete(controlsWindow);
-	return 0;
+    return 0;
 }
 
 Mat thresholdImage(ControlsWindow* controlsWindow, Mat image) {
-	Mat hsvFrame;
-	cvtColor(image, hsvFrame, CV_BGR2HSV);
+    Mat hsvFrame;
+    cvtColor(image, hsvFrame, CV_BGR2HSV);
 
-	vector<Mat> channels;
-	split(hsvFrame, channels);
-	Mat hue = channels.at(0);
-	Mat sat = channels.at(1);
-	Mat val = channels.at(2);
+    vector<Mat> channels;
+    split(hsvFrame, channels);
+    Mat hue = channels.at(0);
+    Mat sat = channels.at(1);
+    Mat val = channels.at(2);
 
-	int minHue = min(controlsWindow->getMinHue(), controlsWindow->getMaxHue());
-	int maxHue = max(controlsWindow->getMinHue(), controlsWindow->getMaxHue());
-	int minSat = min(controlsWindow->getMinSat(), controlsWindow->getMaxSat());
-	int maxSat = max(controlsWindow->getMinSat(), controlsWindow->getMaxSat());
-	int minVal = min(controlsWindow->getMinVal(), controlsWindow->getMaxVal());
-	int maxVal = max(controlsWindow->getMinVal(), controlsWindow->getMaxVal());
+    int minHue = min(controlsWindow->getMinHue(), controlsWindow->getMaxHue());
+    int maxHue = max(controlsWindow->getMinHue(), controlsWindow->getMaxHue());
+    int minSat = min(controlsWindow->getMinSat(), controlsWindow->getMaxSat());
+    int maxSat = max(controlsWindow->getMinSat(), controlsWindow->getMaxSat());
+    int minVal = min(controlsWindow->getMinVal(), controlsWindow->getMaxVal());
+    int maxVal = max(controlsWindow->getMinVal(), controlsWindow->getMaxVal());
 
-	Mat hueMinMask;
-	Mat hueMaxMask;
-	threshold(hue, hueMinMask, minHue, 255, CV_THRESH_BINARY);
-	threshold(hue, hueMaxMask, maxHue, 255, CV_THRESH_BINARY_INV);
+    Mat hueMinMask;
+    Mat hueMaxMask;
+    threshold(hue, hueMinMask, minHue, 255, CV_THRESH_BINARY);
+    threshold(hue, hueMaxMask, maxHue, 255, CV_THRESH_BINARY_INV);
 
-	Mat satMinMask;
-	Mat satMaxMask;
-	threshold(sat, satMinMask, minSat, 255, CV_THRESH_BINARY);
-	threshold(sat, satMaxMask, maxSat, 255, CV_THRESH_BINARY_INV);
+    Mat satMinMask;
+    Mat satMaxMask;
+    threshold(sat, satMinMask, minSat, 255, CV_THRESH_BINARY);
+    threshold(sat, satMaxMask, maxSat, 255, CV_THRESH_BINARY_INV);
 
-	Mat valMinMask;
-	Mat valMaxMask;
-	threshold(val, valMinMask, minVal, 255, CV_THRESH_BINARY);
-	threshold(val, valMaxMask, maxVal, 255, CV_THRESH_BINARY_INV);
+    Mat valMinMask;
+    Mat valMaxMask;
+    threshold(val, valMinMask, minVal, 255, CV_THRESH_BINARY);
+    threshold(val, valMaxMask, maxVal, 255, CV_THRESH_BINARY_INV);
 
-	return applyMask(applyMask(applyMask(applyMask(applyMask(applyMask(image,
-		hueMaxMask), hueMinMask), valMaxMask), valMinMask), satMaxMask), satMinMask);
+    return applyMask(applyMask(applyMask(applyMask(applyMask(applyMask(image,
+                                                                       hueMaxMask), hueMinMask), valMaxMask), valMinMask), satMaxMask), satMinMask);
 }
 
 Mat erodeDilate(Mat src, ControlsWindow* ctrlWin) {
     Mat output;
 
     Mat dilateElement = getStructuringElement( MORPH_RECT,
-                                       Size( 2*ctrlWin->getDilation() + 1, 2*ctrlWin->getDilation()+1 ),
-                                       Point( ctrlWin->getDilation(), ctrlWin->getDilation() ) );
+                                               Size( 2*ctrlWin->getDilation() + 1, 2*ctrlWin->getDilation()+1 ),
+                                               Point( ctrlWin->getDilation(), ctrlWin->getDilation() ) );
     dilate(src, output, dilateElement);
 
     Mat erodeElement = getStructuringElement( MORPH_RECT,
-                                       Size( 2*ctrlWin->getErosion() + 1, 2*ctrlWin->getErosion()+1 ),
-                                       Point( ctrlWin->getErosion(), ctrlWin->getErosion() ) );
+                                              Size( 2*ctrlWin->getErosion() + 1, 2*ctrlWin->getErosion()+1 ),
+                                              Point( ctrlWin->getErosion(), ctrlWin->getErosion() ) );
     erode(output, output, erodeElement);
 
     return output;
@@ -214,8 +214,8 @@ void loadSettings(ControlsWindow* cwin, char* filename) {
 }
 
 void saveSettings(ControlsWindow* cwin, char* filename) {
-	rapidxml::xml_document<> doc;
-	rapidxml::xml_node<>* valuesNode = doc.allocate_node(rapidxml::node_element, "Values");
+    rapidxml::xml_document<> doc;
+    rapidxml::xml_node<>* valuesNode = doc.allocate_node(rapidxml::node_element, "Values");
 
     rapidxml::xml_node<>* brightnessNode = createValNode(&doc, (char*)"Brightness", cwin->brightnessSlider->getValue());
     valuesNode->append_node(brightnessNode);
@@ -224,7 +224,7 @@ void saveSettings(ControlsWindow* cwin, char* filename) {
     valuesNode->append_node(contrastNode);
 
     rapidxml::xml_node<>* blurNode = createValNode(&doc, (char*)"Blur", cwin->blurSlider->getValue());
-	valuesNode->append_node(blurNode);
+    valuesNode->append_node(blurNode);
 
     rapidxml::xml_node<>* minHueNode = createValNode(&doc, (char*)"MinHue", cwin->minHueSlider->getValue());
     valuesNode->append_node(minHueNode);
@@ -246,7 +246,7 @@ void saveSettings(ControlsWindow* cwin, char* filename) {
     rapidxml::xml_node<>* dilationNode = createValNode(&doc, (char*)"Dilation", cwin->dilateSlider->getValue());
     valuesNode->append_node(dilationNode);
 
-	doc.append_node(valuesNode);
+    doc.append_node(valuesNode);
 
     ofstream fileout;
     fileout.open(filename);
@@ -260,13 +260,13 @@ rapidxml::xml_node<>* createValNode(rapidxml::xml_document<>* doc, char* name, i
     char* valueStr = doc->allocate_string(toString(value).c_str());
     rapidxml::xml_node<>* valueNode = doc->allocate_node(rapidxml::node_element, name, valueStr);
 
-	return valueNode;
+    return valueNode;
 }
 
 string toString(int i) {
-	ostringstream convert;
-	convert << i;
-	return convert.str();
+    ostringstream convert;
+    convert << i;
+    return convert.str();
 }
 
 bool fileExists(const std::string& name) {
