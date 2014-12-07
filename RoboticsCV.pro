@@ -12,7 +12,7 @@ SOURCES += main.cpp \
     WindowElement.cpp
 
 INCLUDEPATH += /usr/include
-LIBS += "/usr/lib/libopencv*"
+LIBS += pkg-config --libs opencv
 
 include(deployment.pri)
 qtcAddDeployment()
