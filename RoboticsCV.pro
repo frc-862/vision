@@ -2,6 +2,7 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
+CONFIG += link_pkgconfig
 
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -12,8 +13,7 @@ SOURCES += main.cpp \
     WindowElement.cpp \
     draw.cpp
 
-INCLUDEPATH += /usr/include
-LIBS += pkg-config --libs opencv
+PKGCONFIG += opencv
 
 include(deployment.pri)
 qtcAddDeployment()
