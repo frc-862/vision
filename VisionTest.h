@@ -12,6 +12,7 @@
 #include "rapidxml_utils.hpp"
 #include "Slider.h"
 #include "ModBlobDetector.h"
+#include "draw.h"
 
 using namespace cv;
 

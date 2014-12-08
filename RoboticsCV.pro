@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     ControlsWindow.cpp \
     Slider.cpp \
     Window.cpp \
-    WindowElement.cpp
+    WindowElement.cpp \
+    draw.cpp
 
 INCLUDEPATH += /usr/include
 LIBS += pkg-config --libs opencv
@@ -31,4 +32,5 @@ HEADERS += \
     VisionTest.h \
     Window.h \
     WindowElement.h \
-    ModBlobDetector.h
+    ModBlobDetector.h \
+    draw.h
