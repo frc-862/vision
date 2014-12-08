@@ -6,6 +6,7 @@
 #include <sstream>
 #include <fstream>
 #include <stdio.h>
+#include <thread>
 #include "ControlsWindow.h"
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"

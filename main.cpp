@@ -119,6 +119,7 @@ int process(VideoCapture& capture) {
         default:
             break;
         }
+        std::this_thread::yield();
     }
 
     saveSettings(controlsWindow, (char*)preferenceFileName);
