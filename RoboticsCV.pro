@@ -10,7 +10,7 @@ unix:PKGCONFIG += opencv
 win32:LIBS += "%OPENCV_LIB_DIR%"
 
 SOURCES += *.cpp
-HEADERS += *.h
+HEADERS += *.h *.hpp
 
 OTHER_FILES += \
     RoboticsCV.pro.user
