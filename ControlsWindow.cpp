@@ -25,6 +25,8 @@ ControlsWindow::ControlsWindow()
 	dilateSlider = addSlider("Dilation", 10);
 	erodeSlider = addSlider("Erosion", 10);
 
+    invertSlider = addSlider("Invert", 1);
+
 	maxHueSlider->setValue(256);
 	maxValSlider->setValue(256);
 	maxSatSlider->setValue(256);
@@ -76,4 +78,8 @@ int ControlsWindow::getDilation() {
 
 int ControlsWindow::getErosion() {
     return erodeSlider->getValue();
+}
+
+bool ControlsWindow::getInvert() {
+    return invertSlider->getValue() == 1;
 }

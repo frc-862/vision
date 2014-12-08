@@ -21,6 +21,7 @@ public:
 	int getMaxVal();
 	int getDilation();
 	int getErosion();
+    bool getInvert();
 
 	Slider* brightnessSlider;
 	Slider* contrastSlider;
@@ -33,6 +34,7 @@ public:
 	Slider* maxValSlider;
 	Slider* dilateSlider;
 	Slider* erodeSlider;
+    Slider* invertSlider;
 private:
 
 };

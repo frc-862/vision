@@ -62,6 +62,10 @@ int process(VideoCapture& capture) {
 
         cvtColor(erodedImageBinary, erodedImageBinary, COLOR_BGR2GRAY);
 
+        if(controlsWindow->getInvert()) {
+            erodedImageBinary = 255 - erodedImageBinary;
+        }
+
         cv::SimpleBlobDetector::Params params;
         params.minDistBetweenBlobs = 50.0f;
         params.filterByInertia = false;
