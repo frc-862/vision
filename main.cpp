@@ -146,15 +146,6 @@ Mat thresholdImage(ControlsWindow* controlsWindow, Mat image) {
     Mat mask;
     inRange(hsvFrame, Scalar(minHue, minSat, minVal), Scalar(maxHue, maxSat, maxVal), mask);
 
-    Mat hueMask;
-    inRange(hue, minHue, maxHue, hueMask);
-
-    Mat satMask;
-    inRange(sat, minSat, maxSat, satMask);
-
-    Mat valMask;
-    inRange(val, minVal, maxVal, valMask);
-
     return applyMask(image, mask);
 }
 
