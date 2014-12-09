@@ -26,7 +26,10 @@ Mat applyMask(Mat input, Mat mask) {
 }
 
 int process(VideoCapture& capture) {
+    long captureTime;
     cout << "Press q or escape to quit!" << endl;
+
+    int framerate = 30; //Target number of frames to render per second
 
     namedWindow(VIDEO_WINDOW_NAME, CV_WINDOW_AUTOSIZE);
     namedWindow(ERODE_PREVIEW_WIN_NAME, CV_WINDOW_NORMAL);
@@ -40,6 +43,7 @@ int process(VideoCapture& capture) {
     Mat frame;
     while (true) {
         capture >> frame;
+        captureTime = (int)(getTickCount()/getTickFrequency())*1000;
         if (frame.empty())
             break;
 
@@ -107,7 +111,10 @@ int process(VideoCapture& capture) {
 
         imshow(VIDEO_WINDOW_NAME, frame);
 
-        char key = (char)waitKey(1); //Delay 1ms
+        int waitTime = max((int)(((1.0/framerate)*1000)
+                           - ((int)(getTickCount()/getTickFrequency())*1000 - captureTime))
+                           , 1);
+        char key = (char)waitKey(waitTime); //Delay 1ms
         switch (key) {
         case 'q':
         case 'Q':
@@ -125,7 +132,7 @@ int process(VideoCapture& capture) {
     return 0;
 }
 
-//Profiler shows this is slow, 27.7% process time
+//Profiler shows this is slow, 29.6% process time
 Mat thresholdImage(ControlsWindow* controlsWindow, Mat image) {
     Mat hsvFrame;
     cvtColor(image, hsvFrame, CV_BGR2HSV); //profiler shows this is SLOW
@@ -149,7 +156,7 @@ Mat thresholdImage(ControlsWindow* controlsWindow, Mat image) {
     return applyMask(image, mask);
 }
 
-//Profiler shows this is slow, 20.6% of process time
+//Profiler shows this is slowish, 10.1% of process time
 Mat erodeDilate(Mat src, ControlsWindow* ctrlWin) {
     Mat output;
 
