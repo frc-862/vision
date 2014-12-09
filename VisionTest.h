@@ -15,6 +15,7 @@
 #include "ModBlobDetector.h"
 #include "draw.h"
 
+using namespace std;
 using namespace cv;
 
 Mat applyMask(Mat input, Mat mask);

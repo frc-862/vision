@@ -1,7 +1,5 @@
 #include "VisionTest.h"
 
-using namespace std;
-
 const string VIDEO_WINDOW_NAME = "Video";
 const string ERODE_PREVIEW_WIN_NAME = "Mask Preview";
 const int GAUSSIAN_KERNEL = 7;
@@ -127,9 +125,10 @@ int process(VideoCapture& capture) {
     return 0;
 }
 
+//Profiler shows this is slow, 27.7% process time
 Mat thresholdImage(ControlsWindow* controlsWindow, Mat image) {
     Mat hsvFrame;
-    cvtColor(image, hsvFrame, CV_BGR2HSV);
+    cvtColor(image, hsvFrame, CV_BGR2HSV); //profiler shows this is SLOW
 
     vector<Mat> channels;
     split(hsvFrame, channels);
@@ -144,25 +143,22 @@ Mat thresholdImage(ControlsWindow* controlsWindow, Mat image) {
     int minVal = min(controlsWindow->getMinVal(), controlsWindow->getMaxVal());
     int maxVal = max(controlsWindow->getMinVal(), controlsWindow->getMaxVal());
 
-    Mat hueMinMask;
-    Mat hueMaxMask;
-    threshold(hue, hueMinMask, minHue, 255, CV_THRESH_BINARY);
-    threshold(hue, hueMaxMask, maxHue, 255, CV_THRESH_BINARY_INV);
+    Mat mask;
+    inRange(hsvFrame, Scalar(minHue, minSat, minVal), Scalar(maxHue, maxSat, maxVal), mask);
 
-    Mat satMinMask;
-    Mat satMaxMask;
-    threshold(sat, satMinMask, minSat, 255, CV_THRESH_BINARY);
-    threshold(sat, satMaxMask, maxSat, 255, CV_THRESH_BINARY_INV);
+    Mat hueMask;
+    inRange(hue, minHue, maxHue, hueMask);
 
-    Mat valMinMask;
-    Mat valMaxMask;
-    threshold(val, valMinMask, minVal, 255, CV_THRESH_BINARY);
-    threshold(val, valMaxMask, maxVal, 255, CV_THRESH_BINARY_INV);
+    Mat satMask;
+    inRange(sat, minSat, maxSat, satMask);
 
-    return applyMask(applyMask(applyMask(applyMask(applyMask(applyMask(image,
-                                                                       hueMaxMask), hueMinMask), valMaxMask), valMinMask), satMaxMask), satMinMask);
+    Mat valMask;
+    inRange(val, minVal, maxVal, valMask);
+
+    return applyMask(image, mask);
 }
 
+//Profiler shows this is slow, 20.6% of process time
 Mat erodeDilate(Mat src, ControlsWindow* ctrlWin) {
     Mat output;
 
