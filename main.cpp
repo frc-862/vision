@@ -2,6 +2,7 @@
 
 const string VIDEO_WINDOW_NAME = "Video";
 const string ERODE_PREVIEW_WIN_NAME = "Mask Preview";
+const string MASKED_PREVIEW_NAME = "Masked Color Preview";
 const int GAUSSIAN_KERNEL = 7;
 
 char* preferenceFileName = (char*)"default.xml";
@@ -60,9 +61,8 @@ int process(VideoCapture& capture) {
 
         Mat erodedImageBinary;
 
-        threshold(erodedImage, erodedImageBinary, 0, 255, CV_THRESH_BINARY);
-
-        cvtColor(erodedImageBinary, erodedImageBinary, COLOR_BGR2GRAY);
+        cvtColor(erodedImage, erodedImageBinary, COLOR_BGR2GRAY);
+        threshold(erodedImageBinary, erodedImageBinary, 0, 255, CV_THRESH_BINARY);
 
         if(controlsWindow->getInvert()) {
             erodedImageBinary = 255 - erodedImageBinary;
@@ -153,7 +153,11 @@ Mat thresholdImage(ControlsWindow* controlsWindow, Mat image) {
     Mat mask;
     inRange(hsvFrame, Scalar(minHue, minSat, minVal), Scalar(maxHue, maxSat, maxVal), mask);
 
-    return applyMask(image, mask);
+    Mat newMask;
+
+    threshold(mask, newMask, 0, 255, CV_THRESH_BINARY);
+
+    return applyMask(image, newMask);
 }
 
 //Profiler shows this is slowish, 10.1% of process time
