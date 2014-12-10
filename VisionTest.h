@@ -16,6 +16,14 @@
 #include "ModBlobDetector.h"
 #include "draw.h"
 
+//if we're not on Windows
+#if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#include <libv4l2.h>
+#include <linux/videodev2.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#endif
+
 using namespace std;
 using namespace cv;
 

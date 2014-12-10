@@ -7,7 +7,32 @@ const int GAUSSIAN_KERNEL = 7;
 
 char* preferenceFileName = (char*)"default.xml";
 
+//if we're not on Windows
+#if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+void disableAutoExposure() {
+    int descriptor = v4l2_open("/dev/video0", O_RDWR);
+
+    v4l2_control c;
+    c.id = V4L2_CID_EXPOSURE_AUTO;
+    c.value = V4L2_EXPOSURE_MANUAL;
+    if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
+        cout << "Disabled auto exposure" << endl;
+
+    c.id = V4L2_CID_EXPOSURE_AUTO_PRIORITY;
+    c.value = 0;
+    if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
+        cout << "Disabled auto priority" << endl;
+
+    v4l2_close(descriptor);
+}
+#endif
+
 int main(int argc, char** args) {
+//if we're not on Windows
+#if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+    disableAutoExposure();
+#endif
+
     if(argc > 1) {
         preferenceFileName = args[1];
     }

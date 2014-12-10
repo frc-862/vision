@@ -8,7 +8,7 @@ QMAKE_CXXFLAGS += -std=c++11
 
 win32:INCLUDEPATH += "%OPENCV_DIR%\include"
 
-unix:PKGCONFIG += opencv
+unix:PKGCONFIG += opencv libv4l2
 win32:LIBS += -L"%OPENCV_LIB_DIR%" \
     -lopencv_core249 \
     -lopencv_highgui249 \
