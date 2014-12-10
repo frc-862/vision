@@ -7,7 +7,7 @@ const int CONTRAST_SLIDER_MAX = 100;
 ControlsWindow::ControlsWindow()
 	: Window("Controls")
 {
-	brightnessSlider = addSlider("Brightness", 255);
+    brightnessSlider = addSlider("Brightness", 510);
 	contrastSlider = addSlider("Contrast", CONTRAST_SLIDER_MAX);
 	blurSlider = addSlider("Blur", 100);
 
@@ -30,6 +30,7 @@ ControlsWindow::ControlsWindow()
 	maxHueSlider->setValue(256);
 	maxValSlider->setValue(256);
 	maxSatSlider->setValue(256);
+    brightnessSlider->setValue(255);
 }
 
 ControlsWindow::~ControlsWindow()
@@ -37,7 +38,7 @@ ControlsWindow::~ControlsWindow()
 }
 
 int ControlsWindow::getBrightness() {
-	return brightnessSlider->getValue();
+    return brightnessSlider->getValue()-255;
 }
 
 float ControlsWindow::getContrast() {
