@@ -1,16 +1,25 @@
 #include "VisionTest.h"
 
+const int CAMERA_ID = 0;
 const string VIDEO_WINDOW_NAME = "Video";
 const string ERODE_PREVIEW_WIN_NAME = "Mask Preview";
 const string MASKED_PREVIEW_NAME = "Masked Color Preview";
 const int GAUSSIAN_KERNEL = 7;
+
+//Width of tape in centimeters
+const double TAPE_WIDTH = 50; //PLACEHOLDER VALUE
+//Height of tape in centimeters
+const double TAPE_HEIGHT = 20; //PLACEHOLDER VALUE
+const double TAPE_ASPECT_RATIO = TAPE_WIDTH/TAPE_HEIGHT;
 
 char* preferenceFileName = (char*)"default.xml";
 
 //if we're not on Windows
 #if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
 void disableAutoExposure() {
-    int descriptor = v4l2_open("/dev/video0", O_RDWR);
+    string vidDevice = "/dev/video";
+    vidDevice.append(toString(CAMERA_ID));
+    int descriptor = v4l2_open(vidDevice.c_str(), O_RDWR);
 
     v4l2_control c;
     c.id = V4L2_CID_EXPOSURE_AUTO;
@@ -37,7 +46,7 @@ int main(int argc, char** args) {
         preferenceFileName = args[1];
     }
 
-    VideoCapture capture(0); //0 is the default camera
+    VideoCapture capture(CAMERA_ID);
     if (!capture.isOpened()) {
         cerr << "Failed to open camera!" << endl;
         return 1;
@@ -117,8 +126,8 @@ int process(VideoCapture& capture) {
             contourHulls.push_back(hull);
             contourRects.push_back(minAreaRect(hull));
         }
-        drawContours( frame, contours, -1, Scalar(128,255,128), 2, CV_AA);
-        drawContours( frame, contourHulls, -1, Scalar(255, 128,0), 2, CV_AA);
+        drawContours(frame, contours, -1, Scalar(128,255,128), 2, CV_AA);
+        drawContours(frame, contourHulls, -1, Scalar(255, 128,0), 2, CV_AA);
         for(RotatedRect rr : contourRects) {
             rotated_rect(frame, rr, Scalar(0, 0, 255));
         }
