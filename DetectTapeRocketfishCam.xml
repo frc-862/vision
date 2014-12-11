@@ -1,0 +1,14 @@
+<Values>
+	<Brightness>88</Brightness>
+	<Contrast>74</Contrast>
+	<Blur>0</Blur>
+	<MinHue>81</MinHue>
+	<MaxHue>100</MaxHue>
+	<MinSat>152</MinSat>
+	<MaxSat>256</MaxSat>
+	<MinVal>194</MinVal>
+	<MaxVal>256</MaxVal>
+	<Erosion>9</Erosion>
+	<Dilation>7</Dilation>
+</Values>
+
