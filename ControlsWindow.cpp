@@ -13,8 +13,8 @@ ControlsWindow::ControlsWindow()
 
 	contrastSlider->setValue((1.0 / RELATIVE_MAX_CONTRAST)*CONTRAST_SLIDER_MAX);
 
-	minHueSlider = addSlider("Min Hue", 256);
-	maxHueSlider = addSlider("Max Hue", 256);
+    minHueSlider = addSlider("Min Hue", 181);
+    maxHueSlider = addSlider("Max Hue", 181);
 
 	minValSlider = addSlider("Min Value", 256);
 	maxValSlider = addSlider("Max Value", 256);
