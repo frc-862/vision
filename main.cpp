@@ -1,5 +1,7 @@
 #include "VisionTest.h"
 
+//#define DEBUG_BLOBS
+
 const int CAMERA_ID = 0;
 const string VIDEO_WINDOW_NAME = "Video";
 const string ERODE_PREVIEW_WIN_NAME = "Mask Preview";
@@ -126,11 +128,9 @@ int process(VideoCapture& capture) {
             contourHulls.push_back(hull);
             contourRects.push_back(minAreaRect(hull));
         }
+#ifdef DEBUG_BLOBS
         drawContours(frame, contours, -1, Scalar(128,255,128), 2, CV_AA);
         drawContours(frame, contourHulls, -1, Scalar(255, 128,0), 2, CV_AA);
-        for(RotatedRect rr : contourRects) {
-            rotated_rect(frame, rr, Scalar(0, 0, 255));
-        }
         int ptnum;
         for(KeyPoint pt : centers) {
             Scalar color(255, 0, 255);
@@ -138,6 +138,10 @@ int process(VideoCapture& capture) {
                    , color, -1 /*filled*/, CV_AA);
             circle(frame, pt.pt, pt.size, color, 1, CV_AA);
             ptnum++;
+        }
+#endif
+        for(RotatedRect rr : contourRects) {
+            rotated_rect(frame, rr, Scalar(0, 0, 255));
         }
         delete blobDetector;
 
