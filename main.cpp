@@ -160,6 +160,11 @@ int process(VideoCapture& capture) {
             double aspectRatio = longestSide/shortestSide;
             int b = 0;
             bool isTape = abs(TAPE_ASPECT_RATIO - aspectRatio) < 0.2*TAPE_ASPECT_RATIO;
+            /*
+             * TODO
+             * Make a list of possible tape candidates
+             * Use tape candidate with smallest difference in ratio to the real ratio as the tape
+             */
             if(isTape) {
                 b = 255;
                 string widthText = "Width (px): ";
