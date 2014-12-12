@@ -1,6 +1,6 @@
 #include "VisionTest.h"
 
-//#define DEBUG_BLOBS
+#define DEBUG_BLOBS
 
 const int CAMERA_ID = 0;
 const string VIDEO_WINDOW_NAME = "Video";
@@ -9,9 +9,9 @@ const string MASKED_PREVIEW_NAME = "Masked Color Preview";
 const int GAUSSIAN_KERNEL = 7;
 
 //Width of tape in centimeters
-const double TAPE_WIDTH = 50; //PLACEHOLDER VALUE
+const double TAPE_WIDTH = 11; //PLACEHOLDER VALUE
 //Height of tape in centimeters
-const double TAPE_HEIGHT = 20; //PLACEHOLDER VALUE
+const double TAPE_HEIGHT = 6.2; //PLACEHOLDER VALUE
 const double TAPE_ASPECT_RATIO = TAPE_WIDTH/TAPE_HEIGHT;
 
 char* preferenceFileName = (char*)"default.xml";
@@ -62,9 +62,18 @@ Mat applyMask(Mat input, Mat mask) {
     return newImage;
 }
 
+float distance(Point2f p1, Point2f p2) {
+    int xDiff = abs(p1.x - p2.x);
+    int yDiff = abs(p1.y - p2.y);
+    return sqrt(pow(xDiff, 2) + pow(yDiff, 2));
+}
+
 int process(VideoCapture& capture) {
     long captureTime;
     cout << "Press q or escape to quit!" << endl;
+
+    CvFont infoFont;
+    cvInitFont(&infoFont, CV_FONT_HERSHEY_SIMPLEX, 1, 1);
 
     int framerate = 30; //Target number of frames to render per second
 
@@ -141,7 +150,28 @@ int process(VideoCapture& capture) {
         }
 #endif
         for(RotatedRect rr : contourRects) {
-            rotated_rect(frame, rr, Scalar(0, 0, 255));
+            Point2f points[4];
+            rr.points(points);
+            double side1 = distance(points[0], points[1]);
+            double side2 = distance(points[1], points[2]);
+
+            double shortestSide = min(side1, side2);
+            double longestSide = max(side1, side2);
+            double aspectRatio = longestSide/shortestSide;
+            int b = 0;
+            bool isTape = abs(TAPE_ASPECT_RATIO - aspectRatio) < 0.2*TAPE_ASPECT_RATIO;
+            if(isTape) {
+                b = 255;
+                string widthText = "Width (px): ";
+                widthText.append(toString(longestSide));
+                string heightText = "Height (px): ";
+                heightText.append(toString(shortestSide));
+                putText(frame, widthText, Point(0, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
+                putText(frame, heightText, Point(0, 40), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
+            }
+
+            rotated_rect(frame, rr, Scalar(b, 0, 255));
+            if(isTape)break;
         }
         delete blobDetector;
 
