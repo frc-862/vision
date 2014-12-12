@@ -169,7 +169,7 @@ int process(VideoCapture& capture) {
                 string rotText = "Rotation (deg): ";
                 rotText.append(toString((int)rr.angle));
                 putText(frame, widthText, Point(0, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
-                putText(frame, heihtText, Point(0, 40), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
+                putText(frame, heightText, Point(0, 40), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
                 putText(frame, rotText, Point(0, 60), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
             }
 
