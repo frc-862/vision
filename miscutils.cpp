@@ -6,7 +6,7 @@ std::string toString(int i) {
     return convert.str();
 }
 
-std::string toString(double i) {
+std::string toString(float i) {
     std::ostringstream convert;
     convert << i;
     return convert.str();

@@ -9,12 +9,12 @@ const string MASKED_PREVIEW_NAME = "Masked Color Preview";
 const int GAUSSIAN_KERNEL = 7;
 
 //Width of tape in centimeters
-const double TAPE_WIDTH = 11; //PLACEHOLDER VALUE
+const float TAPE_WIDTH = 11; //PLACEHOLDER VALUE
 //Height of tape in centimeters
-const double TAPE_HEIGHT = 6.2; //PLACEHOLDER VALUE
-const double TAPE_ASPECT_RATIO = TAPE_WIDTH/TAPE_HEIGHT;
+const float TAPE_HEIGHT = 6.2; //PLACEHOLDER VALUE
+const float TAPE_ASPECT_RATIO = TAPE_WIDTH/TAPE_HEIGHT;
 
-double focalLength = 526.8;
+float focalLength = 526.8;
 
 #ifdef NIX
 int exposureMode = V4L2_EXPOSURE_AUTO;
@@ -165,12 +165,12 @@ int process(VideoCapture& capture) {
         for(RotatedRect rr : contourRects) {
             Point2f points[4];
             rr.points(points);
-            double side1 = distance(points[0], points[1]);
-            double side2 = distance(points[1], points[2]);
+            float side1 = distance(points[0], points[1]);
+            float side2 = distance(points[1], points[2]);
 
-            double shortestSide = min(side1, side2);
-            double longestSide = max(side1, side2);
-            double aspectRatio = longestSide/shortestSide;
+            float shortestSide = min(side1, side2);
+            float longestSide = max(side1, side2);
+            float aspectRatio = longestSide/shortestSide;
             int b = 0;
             bool isTape = abs(TAPE_ASPECT_RATIO - aspectRatio) < 0.2*TAPE_ASPECT_RATIO;
             /*
@@ -186,7 +186,7 @@ int process(VideoCapture& capture) {
                 heightText.append(toString(shortestSide));
                 string rotText = "Rotation (deg): ";
                 rotText.append(toString((int)rr.angle));
-                double dist = TAPE_WIDTH * focalLength / longestSide;
+                float dist = TAPE_WIDTH * focalLength / longestSide;
                 string distText = "Distance (cm): ";
                 distText.append(toString(dist));
                 putText(frame, widthText, Point(0, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));

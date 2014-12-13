@@ -11,9 +11,9 @@
 #include "oscheck.h"
 
 #ifdef NIX
-void loadCameraSettings(char* filename, double& focalLength, int& exposureMode);
+void loadCameraSettings(char* filename, float& focalLength, int& exposureMode);
 #else
-void loadCameraSettings(char* filename, double& focalLength);
+void loadCameraSettings(char* filename, float& focalLength);
 #endif
 
 void saveSettings(ControlsWindow* cwin, char* filename);
