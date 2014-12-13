@@ -8,6 +8,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/features2d/features2d.hpp"
+#include "opencv2/gpu/gpu.hpp"
 
 #include "ControlsWindow.h"
 #include "Slider.h"
@@ -31,7 +32,6 @@ Mat applyMask(Mat input, Mat mask);
 int process(VideoCapture& capture);
 Mat thresholdImage(ControlsWindow* controlsWindow, Mat image);
 Mat erodeDilate(Mat src, ControlsWindow* ctrlWin);
-rapidxml::xml_node<>* createValNode(rapidxml::xml_document<>* doc, char* name, int value);
 void rotated_rect(Mat im, const RotatedRect & rot_rect, CvScalar color);
 void loadCameraSettings(char* filename);
 
