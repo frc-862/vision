@@ -23,3 +23,4 @@ OTHER_FILES += \
 
 include(deployment.pri)
 qtcAddDeployment()
+

@@ -1,3 +1,5 @@
+#ifndef WINDOW_H
+#define WINDOW_H
 #pragma once
 #include <string>
 #include <vector>
@@ -16,4 +18,4 @@ private:
 	std::string name;
 	std::vector<WindowElement*> elements;
 };
-
+#endif

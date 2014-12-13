@@ -1,3 +1,5 @@
+#ifndef CONTROLSWINDOW_H
+#define CONTROLSWINDOW_H
 #pragma once
 #include "Window.h"
 class ControlsWindow :
@@ -38,4 +40,4 @@ public:
 private:
 
 };
-
+#endif

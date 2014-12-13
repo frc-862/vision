@@ -18,5 +18,7 @@ Window::~Window()
 }
 
 Slider* Window::addSlider(std::string sliderName, int maxValue) {
-	return new Slider(this, sliderName, maxValue);
+    Slider* sl = new Slider(this, sliderName, maxValue);
+    elements.push_back(sl);
+    return sl;
 }

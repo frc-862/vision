@@ -1,3 +1,6 @@
+#ifndef MODBLOBDETECTOR_H
+#define MODBLOBDETECTOR_H
+
 #include "opencv2/features2d/features2d.hpp"
 
 using namespace cv;
@@ -117,3 +120,5 @@ void ModBlobDetector::findBlobs(const cv::Mat &image, const cv::Mat &binaryImage
     //  waitKey();
 #endif
 }
+
+#endif

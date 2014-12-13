@@ -1,3 +1,5 @@
+#ifndef SLIDER_H
+#define SLIDER_H
 #pragma once
 #include "WindowElement.h"
 #include "Window.h"
@@ -17,3 +19,4 @@ private:
 	Window* parent;
 };
 
+#endif
