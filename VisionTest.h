@@ -38,3 +38,4 @@ std::string toString(int i);
 std::string toString(double i);
 bool fileExists(const std::string& name);
 void rotated_rect(Mat im, const RotatedRect & rot_rect, CvScalar color);
+void loadCameraSettings(char* filename);

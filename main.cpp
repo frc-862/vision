@@ -1,6 +1,6 @@
 #include "VisionTest.h"
 
-#define DEBUG_BLOBS
+//#define DEBUG_BLOBS
 
 const int CAMERA_ID = 0;
 const string VIDEO_WINDOW_NAME = "Video";
@@ -21,7 +21,7 @@ double focalLength = 526.8;
 #endif
 
 #ifdef NIX
-const int EXPOSURE_MODE = V4L2_EXPOSURE_AUTO;
+int exposureMode = V4L2_EXPOSURE_AUTO;
 #endif
 
 char* preferenceFileName = (char*)"default.xml";
@@ -35,7 +35,7 @@ void disableAutoExposure() {
 
     v4l2_control c;
     c.id = V4L2_CID_EXPOSURE_AUTO;
-    c.value = EXPOSURE_MODE;
+    c.value = exposureMode;
     if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
         cout << "Disabled auto exposure" << endl;
 
@@ -49,7 +49,10 @@ void disableAutoExposure() {
 #endif
 
 int main(int argc, char** args) {
-//if we're not on Windows
+    if(fileExists("camera.xml")) {
+        loadCameraSettings("camera.xml");
+    }
+
 #ifdef NIX
     disableAutoExposure();
 #endif
@@ -265,6 +268,27 @@ Mat erodeDilate(Mat src, ControlsWindow* ctrlWin) {
     erode(output, output, erodeElement);
 
     return output;
+}
+
+void loadCameraSettings(char* filename) {
+    rapidxml::xml_document<> doc;
+    rapidxml::file<> file(filename);
+
+    doc.parse<0>(file.data());
+
+    rapidxml::xml_node<>* focalLengthNode = doc.first_node("FocalLength");
+    if(focalLengthNode != nullptr) {
+        focalLength = atof(focalLengthNode->value());
+    }
+
+#ifdef NIX
+    rapidxml::xml_node<>* exposureModeNode = doc.first_node("ExposureMode");
+    if(exposureModeNode != nullptr) {
+        exposureMode = atof(exposureModeNode->value());
+    }
+#endif
+
+    doc.clear();
 }
 
 void loadSettings(ControlsWindow* cwin, char* filename) {
