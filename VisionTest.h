@@ -31,8 +31,6 @@ Mat applyMask(Mat input, Mat mask);
 int process(VideoCapture& capture);
 Mat thresholdImage(ControlsWindow* controlsWindow, Mat image);
 Mat erodeDilate(Mat src, ControlsWindow* ctrlWin);
-void saveSettings(ControlsWindow* cwin, char* filename);
-void loadSettings(ControlsWindow* cwin, char* filename);
 rapidxml::xml_node<>* createValNode(rapidxml::xml_document<>* doc, char* name, int value);
 void rotated_rect(Mat im, const RotatedRect & rot_rect, CvScalar color);
 void loadCameraSettings(char* filename);

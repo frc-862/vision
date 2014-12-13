@@ -17,6 +17,7 @@ void loadCameraSettings(char* filename, double& focalLength);
 #endif
 
 void saveSettings(ControlsWindow* cwin, char* filename);
+void loadSettings(ControlsWindow* cwin, char* filename);
 
 rapidxml::xml_node<>* createValNode(rapidxml::xml_document<>* doc, char* name, int value);
 
