@@ -14,10 +14,20 @@ const double TAPE_WIDTH = 11; //PLACEHOLDER VALUE
 const double TAPE_HEIGHT = 6.2; //PLACEHOLDER VALUE
 const double TAPE_ASPECT_RATIO = TAPE_WIDTH/TAPE_HEIGHT;
 
+double focalLength = 526.8;
+
+#if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#define NIX
+#endif
+
+#ifdef NIX
+const int EXPOSURE_MODE = V4L2_EXPOSURE_AUTO;
+#endif
+
 char* preferenceFileName = (char*)"default.xml";
 
 //if we're not on Windows
-#if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#ifdef NIX
 void disableAutoExposure() {
     string vidDevice = "/dev/video";
     vidDevice.append(toString(CAMERA_ID));
@@ -25,7 +35,7 @@ void disableAutoExposure() {
 
     v4l2_control c;
     c.id = V4L2_CID_EXPOSURE_AUTO;
-    c.value = V4L2_EXPOSURE_MANUAL;
+    c.value = EXPOSURE_MODE;
     if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
         cout << "Disabled auto exposure" << endl;
 
@@ -40,7 +50,7 @@ void disableAutoExposure() {
 
 int main(int argc, char** args) {
 //if we're not on Windows
-#if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#ifdef NIX
     disableAutoExposure();
 #endif
 
@@ -173,9 +183,13 @@ int process(VideoCapture& capture) {
                 heightText.append(toString(shortestSide));
                 string rotText = "Rotation (deg): ";
                 rotText.append(toString((int)rr.angle));
+                double dist = TAPE_WIDTH * focalLength / longestSide;
+                string distText = "Distance (cm): ";
+                distText.append(toString(dist));
                 putText(frame, widthText, Point(0, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
                 putText(frame, heightText, Point(0, 40), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
                 putText(frame, rotText, Point(0, 60), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
+                putText(frame, distText, Point(0, 80), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
             }
 
             rotated_rect(frame, rr, Scalar(b, 0, 255));
@@ -339,6 +353,12 @@ rapidxml::xml_node<>* createValNode(rapidxml::xml_document<>* doc, char* name, i
 }
 
 string toString(int i) {
+    ostringstream convert;
+    convert << i;
+    return convert.str();
+}
+
+string toString(double i) {
     ostringstream convert;
     convert << i;
     return convert.str();

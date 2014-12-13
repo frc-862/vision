@@ -35,5 +35,6 @@ void saveSettings(ControlsWindow* cwin, char* filename);
 void loadSettings(ControlsWindow* cwin, char* filename);
 rapidxml::xml_node<>* createValNode(rapidxml::xml_document<>* doc, char* name, int value);
 std::string toString(int i);
+std::string toString(double i);
 bool fileExists(const std::string& name);
 void rotated_rect(Mat im, const RotatedRect & rot_rect, CvScalar color);
