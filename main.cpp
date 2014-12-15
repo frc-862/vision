@@ -262,7 +262,6 @@ Mat thresholdImage(ControlsWindow* controlsWindow, Mat image) {
     return applyMask(image, newMask);
 }
 
-//Profiler shows this is slowish, 10.1% of process time
 Mat erodeDilate(Mat src, ControlsWindow* ctrlWin) {
     Mat output;
 
