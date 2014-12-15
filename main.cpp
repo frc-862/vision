@@ -1,7 +1,5 @@
 #include "VisionTest.h"
 
-//#define DEBUG_BLOBS
-
 const int CAMERA_ID = 0;
 const string VIDEO_WINDOW_NAME = "Video";
 const string ERODE_PREVIEW_WIN_NAME = "Mask Preview";

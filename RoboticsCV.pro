@@ -16,7 +16,8 @@ win32:LIBS += -L"%OPENCV_LIB_DIR%" \
     -lopencv_features2d249
 
 SOURCES += *.cpp
-HEADERS += *.h *.hpp
+HEADERS += *.h *.hpp \
+    settings.h
 
 OTHER_FILES += \
     RoboticsCV.pro.user

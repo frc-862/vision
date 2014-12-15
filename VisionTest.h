@@ -17,6 +17,7 @@
 #include "miscutils.h"
 #include "preferences.h"
 #include "oscheck.h"
+#include "settings.h"
 
 #ifdef NIX
 #include <libv4l2.h>
