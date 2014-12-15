@@ -1,10 +1,6 @@
 #include "preferences.h"
 
-#ifdef NIX
 CameraSettings loadCameraSettings(char* filename) {
-#else
-void loadCameraSettings(char* filename, float& focalLength) {
-#endif
     CameraSettings camSettings;
     rapidxml::xml_document<> doc;
     rapidxml::file<> file(filename);
