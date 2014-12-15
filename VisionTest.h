@@ -33,6 +33,5 @@ int process(VideoCapture& capture);
 Mat thresholdImage(ControlsWindow* controlsWindow, Mat image);
 Mat erodeDilate(Mat src, ControlsWindow* ctrlWin);
 void rotated_rect(Mat im, const RotatedRect & rot_rect, CvScalar color);
-void loadCameraSettings(char* filename);
 
 #endif

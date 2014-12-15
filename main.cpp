@@ -14,11 +14,7 @@ const float TAPE_WIDTH = 11; //PLACEHOLDER VALUE
 const float TAPE_HEIGHT = 6.2; //PLACEHOLDER VALUE
 const float TAPE_ASPECT_RATIO = TAPE_WIDTH/TAPE_HEIGHT;
 
-float focalLength = 526.8;
-
-#ifdef NIX
-int exposureMode = V4L2_EXPOSURE_AUTO;
-#endif
+CameraSettings camSettings;
 
 char* preferenceFileName = (char*)"default.xml";
 
@@ -31,7 +27,7 @@ void disableAutoExposure() {
 
     v4l2_control c;
     c.id = V4L2_CID_EXPOSURE_AUTO;
-    c.value = exposureMode;
+    c.value = camSettings.exposureMode;
     if(v4l2_ioctl(descriptor, VIDIOC_S_CTRL, &c) == 0)
         cout << "Disabled auto exposure" << endl;
 
@@ -46,11 +42,7 @@ void disableAutoExposure() {
 
 int main(int argc, char** args) {
     if(fileExists("camera.xml")) {
-#ifdef NIX
-        loadCameraSettings("camera.xml", focalLength, exposureMode);
-#else
-        loadCameraSettings("camera.xml", focalLength);
-#endif
+        camSettings = loadCameraSettings((char*)"camera.xml");
     }
 
 #ifdef NIX
@@ -66,6 +58,15 @@ int main(int argc, char** args) {
         cerr << "Failed to open camera!" << endl;
         return 1;
     }
+
+    //Set camera properties
+    if(camSettings.gain != -1) {
+        capture.set(CV_CAP_PROP_GAIN, camSettings.gain);
+    }
+    if(camSettings.exposureTime != -1) {
+        capture.set(CV_CAP_PROP_EXPOSURE, camSettings.exposureTime);
+    }
+
     return process(capture);
 }
 
@@ -186,9 +187,14 @@ int process(VideoCapture& capture) {
                 heightText.append(toString(shortestSide));
                 string rotText = "Rotation (deg): ";
                 rotText.append(toString((int)rr.angle));
-                float dist = TAPE_WIDTH * focalLength / longestSide;
-                string distText = "Distance (cm): ";
-                distText.append(toString(dist));
+                string distText;
+                if(camSettings.focalLength == -1) {
+                    distText = "Focal length not defined";
+                } else {
+                    float dist = TAPE_WIDTH * camSettings.focalLength / longestSide;
+                    distText = "Distance (cm): ";
+                    distText.append(toString(dist));
+                }
                 putText(frame, widthText, Point(0, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
                 putText(frame, heightText, Point(0, 40), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
                 putText(frame, rotText, Point(0, 60), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));

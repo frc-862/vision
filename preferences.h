@@ -11,10 +11,21 @@
 #include "oscheck.h"
 
 #ifdef NIX
-void loadCameraSettings(char* filename, float& focalLength, int& exposureMode);
-#else
-void loadCameraSettings(char* filename, float& focalLength);
+#include <linux/v4l2-controls.h>
 #endif
+
+struct CameraSettings {
+    float focalLength = -1;
+#ifdef NIX
+    int exposureMode = V4L2_EXPOSURE_AUTO;
+#else
+    int exposureMode = -1;
+#endif
+    float exposureTime = -1;
+    float gain = -1;
+};
+
+CameraSettings loadCameraSettings(char* filename);
 
 void saveSettings(ControlsWindow* cwin, char* filename);
 void loadSettings(ControlsWindow* cwin, char* filename);

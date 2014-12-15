@@ -1,10 +1,11 @@
 #include "preferences.h"
 
 #ifdef NIX
-void loadCameraSettings(char* filename, float& focalLength, int& exposureMode) {
+CameraSettings loadCameraSettings(char* filename) {
 #else
 void loadCameraSettings(char* filename, float& focalLength) {
 #endif
+    CameraSettings camSettings;
     rapidxml::xml_document<> doc;
     rapidxml::file<> file(filename);
 
@@ -12,17 +13,29 @@ void loadCameraSettings(char* filename, float& focalLength) {
 
     rapidxml::xml_node<>* focalLengthNode = doc.first_node("FocalLength");
     if(focalLengthNode != nullptr) {
-        focalLength = atof(focalLengthNode->value());
+        camSettings.focalLength = atof(focalLengthNode->value());
     }
 
 #ifdef NIX
     rapidxml::xml_node<>* exposureModeNode = doc.first_node("ExposureMode");
     if(exposureModeNode != nullptr) {
-        exposureMode = atof(exposureModeNode->value());
+        camSettings.exposureMode = atoi(exposureModeNode->value());
     }
 #endif
 
+    rapidxml::xml_node<>* expTimeNode = doc.first_node("ExposureTime");
+    if(expTimeNode != nullptr) {
+        camSettings.exposureTime = atof(expTimeNode->value());
+    }
+
+    rapidxml::xml_node<>* gainNode = doc.first_node("Gain");
+    if(gainNode != nullptr) {
+        camSettings.gain = atof(gainNode->value());
+    }
+
     doc.clear();
+
+    return camSettings;
 }
 
 void loadSettings(ControlsWindow* cwin, char* fileName) {
