@@ -2,6 +2,7 @@
 #define PREFERENCES_H
 
 #include <ostream>
+#include <iostream>
 #include "miscutils.h"
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"
@@ -25,7 +26,14 @@ struct CameraSettings {
     float gain = -1;
 };
 
+struct ObjectInfo {
+    float width = 0;
+    float height = 0;
+    float aspectRatio = 0;
+};
+
 CameraSettings loadCameraSettings(char* filename);
+ObjectInfo loadObjectInfo(char* filename);
 
 void saveSettings(ControlsWindow* cwin, char* filename);
 void loadSettings(ControlsWindow* cwin, char* filename);

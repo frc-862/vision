@@ -38,6 +38,42 @@ void loadCameraSettings(char* filename, float& focalLength) {
     return camSettings;
 }
 
+ObjectInfo loadObjectInfo(char* filename) {
+    ObjectInfo objInfo;
+    rapidxml::xml_document<> doc;
+    rapidxml::file<> file(filename);
+
+    doc.parse<0>(file.data());
+
+    rapidxml::xml_node<>* widthNode = doc.first_node("Width");
+    if(widthNode != nullptr) {
+        float width = atof(widthNode->value());
+        if(width < 0) {
+            std::cerr << "Width in object config is negative!!! THIS IS A PROBLEM!" << std::endl;
+        } else {
+            objInfo.width = width;
+        }
+    }
+
+    rapidxml::xml_node<>* heightNode = doc.first_node("Height");
+    if(widthNode != nullptr) {
+        float height = atof(heightNode->value());
+        if(height < 0) {
+            std::cerr << "Height in object config is negative!!! THIS IS A PROBLEM!" << std::endl;
+        } else {
+            objInfo.height = height;
+        }
+    }
+
+    float longestSide = std::max(objInfo.width, objInfo.height);
+    float shortestSide = std::min(objInfo.width, objInfo.height);
+    if(longestSide != 0 && shortestSide != 0) {
+        objInfo.aspectRatio = longestSide/shortestSide;
+    }
+
+    return objInfo;
+}
+
 void loadSettings(ControlsWindow* cwin, char* fileName) {
     rapidxml::xml_document<> doc;
     rapidxml::file<> file(fileName);

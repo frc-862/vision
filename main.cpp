@@ -8,12 +8,7 @@ const string ERODE_PREVIEW_WIN_NAME = "Mask Preview";
 const string MASKED_PREVIEW_NAME = "Masked Color Preview";
 const int GAUSSIAN_KERNEL = 7;
 
-//Width of tape in centimeters
-const float TAPE_WIDTH = 11; //PLACEHOLDER VALUE
-//Height of tape in centimeters
-const float TAPE_HEIGHT = 6.2; //PLACEHOLDER VALUE
-const float TAPE_ASPECT_RATIO = TAPE_WIDTH/TAPE_HEIGHT;
-
+ObjectInfo objInfo;
 CameraSettings camSettings;
 
 char* preferenceFileName = (char*)"default.xml";
@@ -43,6 +38,9 @@ void disableAutoExposure() {
 int main(int argc, char** args) {
     if(fileExists("camera.xml")) {
         camSettings = loadCameraSettings((char*)"camera.xml");
+    }
+    if(fileExists("object.xml")) {
+        objInfo = loadObjectInfo((char*)"object.xml");
     }
 
 #ifdef NIX
@@ -173,7 +171,8 @@ int process(VideoCapture& capture) {
             float longestSide = max(side1, side2);
             float aspectRatio = longestSide/shortestSide;
             int b = 0;
-            bool isTape = abs(TAPE_ASPECT_RATIO - aspectRatio) < 0.2*TAPE_ASPECT_RATIO;
+            bool isTape = objInfo.aspectRatio == 0 ? false :
+                          abs(objInfo.aspectRatio - aspectRatio) < 0.2*objInfo.aspectRatio;
             /*
              * TODO
              * Make a list of possible tape candidates
@@ -191,7 +190,7 @@ int process(VideoCapture& capture) {
                 if(camSettings.focalLength == -1) {
                     distText = "Focal length not defined";
                 } else {
-                    float dist = TAPE_WIDTH * camSettings.focalLength / longestSide;
+                    float dist = objInfo.width * camSettings.focalLength / longestSide;
                     distText = "Distance (cm): ";
                     distText.append(toString(dist));
                 }
@@ -203,6 +202,9 @@ int process(VideoCapture& capture) {
 
             rotated_rect(frame, rr, Scalar(b, 0, 255));
             if(isTape)break;
+        }
+        if(objInfo.aspectRatio == 0) {
+            putText(frame, "Invalid object info (object.xml)", Point(0, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5f, Scalar(0, 255, 255));
         }
         delete blobDetector;
 
