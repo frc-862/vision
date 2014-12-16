@@ -183,7 +183,7 @@ int process(VideoCapture& capture) {
                 string heightText = "Height (px): ";
                 heightText.append(toString(shortestSide));
                 string rotText = "Rotation (deg): ";
-                rotText.append(toString((int)rr.angle));
+                rotText.append(toString(abs((int)rr.angle)));
                 string distText;
                 if(camSettings.focalLength == -1) {
                     distText = "Focal length not defined";
