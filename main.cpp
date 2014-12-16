@@ -213,7 +213,7 @@ int process(VideoCapture& capture) {
         int waitTime = max((int)(((1.0/framerate)*1000)
                            - ((int)(getTickCount()/getTickFrequency())*1000 - captureTime))
                            , 1);
-        char key = (char)waitKey(waitTime); //Delay 1ms
+        char key = (char)waitKey(waitTime);
         switch (key) {
         case 'q':
         case 'Q':
