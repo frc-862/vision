@@ -1,6 +1,6 @@
 #include "VisionTest.h"
 
-const int CAMERA_ID = 0;
+const int CAMERA_ID = 1;
 const string VIDEO_WINDOW_NAME = "Video";
 const string ERODE_PREVIEW_WIN_NAME = "Mask Preview";
 const string MASKED_PREVIEW_NAME = "Masked Color Preview";
@@ -85,8 +85,6 @@ int process(VideoCapture& capture) {
     CvFont infoFont;
     cvInitFont(&infoFont, CV_FONT_HERSHEY_SIMPLEX, 1, 1);
 
-    int framerate = 30; //Target number of frames to render per second
-
     namedWindow(VIDEO_WINDOW_NAME, CV_WINDOW_AUTOSIZE);
     namedWindow(ERODE_PREVIEW_WIN_NAME, CV_WINDOW_NORMAL);
     resizeWindow(ERODE_PREVIEW_WIN_NAME, 320, 240);
@@ -100,8 +98,13 @@ int process(VideoCapture& capture) {
     while (true) {
         capture >> frame;
         captureTime = (int)(getTickCount()/getTickFrequency())*1000;
+
         if (frame.empty())
             break;
+
+        int target_width = 320;
+        int height = (target_width/capture.get(3 /*width*/)) * capture.get(4 /*height*/);
+        resize(frame, frame, Size(target_width, height));
 
         if (controlsWindow->getBlurDeviation() > 0) {
             GaussianBlur(frame, frame, Size(GAUSSIAN_KERNEL, GAUSSIAN_KERNEL), controlsWindow->getBlurDeviation());
@@ -210,10 +213,10 @@ int process(VideoCapture& capture) {
 
         imshow(VIDEO_WINDOW_NAME, frame);
 
-        int waitTime = max((int)(((1.0/framerate)*1000)
-                           - ((int)(getTickCount()/getTickFrequency())*1000 - captureTime))
-                           , 1);
-        char key = (char)waitKey(waitTime);
+        //int waitTime = max((int)(((1.0/framerate)*1000)
+        //                   - ((int)(getTickCount()/getTickFrequency())*1000 - captureTime))
+        //                   , 1);
+        char key = (char)waitKey(1);
         switch (key) {
         case 'q':
         case 'Q':
